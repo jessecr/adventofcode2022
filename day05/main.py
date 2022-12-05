@@ -1,37 +1,39 @@
 from collections import defaultdict
+from copy import deepcopy
 
 fname = 'example_input'
 fname = 'input'
 
+with open(fname, 'r') as fd:
+    stacks_text, instructions_text = fd.read().split('\n\n')
 
-def main(part_2=False):
-    stacks = defaultdict(list)
-    with open(fname, 'r') as fd:
-        while '[' in (line := fd.readline()):
-            i = 1
-            for chunk in line.rstrip().split('['):
-                for subchunk in chunk.split(']'):
-                    if subchunk.isalpha():
-                        stacks[i].insert(0, subchunk)
-                        i += 1
-                    else:
-                        i += subchunk.count(' ' * 4)
+stacks = defaultdict(list)
+for line in stacks_text.splitlines()[:-1]:
+    i = 1
+    for chunk in line.split('['):
+        for subchunk in chunk.split(']'):
+            if subchunk.isalpha():
+                stacks[i].insert(0, subchunk)
+                i += 1
+            else:
+                i += subchunk.count(' ' * 4)
 
-        for line in fd:
-            if line.startswith('move'):
-                _, count, _, src, _, dest = line.split()
-                count, src, dest = map(int, (count, src, dest))
-                picked = stacks[src][-count:]
-                if not part_2:
-                    picked = picked[::-1]
-                stacks[dest].extend(picked)
-                stacks[src] = stacks[src][:-count]
-
-    for i, items in sorted(stacks.items()):
-        print(items[-1], end='')
-
-    print()
+instructions = []
+for line in instructions_text.splitlines():
+    _, count, _, src, _, dest = line.split()
+    instructions.append((int(count), int(src), int(dest)))
 
 
-main()
-main(part_2=True)
+def solve(stacks, instructions, reverse_crates=False):
+    for count, src, dest in instructions:
+        picked = stacks[src][-count:]
+        if reverse_crates:
+            picked = picked[::-1]
+        stacks[dest].extend(picked)
+        stacks[src] = stacks[src][:-count]
+
+    return ''.join([v[-1] for _, v in sorted(stacks.items())])
+
+
+print(solve(deepcopy(stacks), instructions, reverse_crates=True))
+print(solve(stacks, instructions))
