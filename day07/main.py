@@ -2,9 +2,8 @@ fname = 'example_input'
 fname = 'input'
 
 dirsizes = {}
-curdirs = ['/']
+curdirs = []
 with open(fname, 'r') as fd:
-    fd.readline()
     for line in fd:
         if line.startswith('$'):
             _, cmd, *args = line.split()
