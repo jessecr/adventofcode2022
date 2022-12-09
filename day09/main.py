@@ -1,28 +1,15 @@
-direction_guide = {'R': (1, 1), 'L': (1, -1), 'U': (0, 1), 'D': (0, -1)}
+directions = {'R': (1, 1), 'L': (1, -1), 'U': (0, 1), 'D': (0, -1)}
 
 
 def update_knot(to_update, target):
-    adjacent = abs(target[0] - to_update[0]) <= 1 and abs(target[1] - to_update[1]) <= 1
-    if target == to_update or adjacent:
-        return
+    row_diff = target[0] - to_update[0]
+    col_diff = target[1] - to_update[1]
 
-    row_diff = abs(target[0] - to_update[0])
-    col_diff = abs(target[1] - to_update[1])
-
-    # Align with the axis that the knot is offset once from, if any.
-    if row_diff and col_diff:
-        if row_diff == 1:
-            to_update[0] = target[0]
-        elif col_diff == 1:
-            to_update[1] = target[1]
-
-    # Move one towards target knot in any axis that the knot is offset twice from, if any.
-    if row_diff == 2:
-        offset = 1 if to_update[0] < target[0] else -1
-        to_update[0] += offset
-    if col_diff == 2:
-        offset = 1 if to_update[1] < target[1] else -1
-        to_update[1] += offset
+    if abs(row_diff) > 1 or abs(col_diff) > 1:
+        r = max(min(row_diff, 1), -1)
+        c = max(min(col_diff, 1), -1)
+        to_update[0] += r
+        to_update[1] += c
 
 
 def solve(num_knots, cmds):
@@ -30,7 +17,7 @@ def solve(num_knots, cmds):
     visited = {(0, 0)}
     for direction, count in cmds:
         for i in range(count):
-            idx, amt = direction_guide[direction]
+            idx, amt = directions[direction]
             knots[0][idx] += amt
 
             for i in range(1, len(knots)):
