@@ -6,29 +6,12 @@ fname = 'example_input'
 fname = 'input'
 
 
-def get_operation_func(lh, op_str, rh):
-    op = {'+': add, '*': mul}[op_str]
+def get_operation_func(_, op_str, rh):
+    op = add if op_str == '+' else mul
     if rh == 'old':
         return lambda x: op(x, x)
     rh = int(rh)
     return lambda x: op(x, rh)
-
-
-monkeys = []
-with open(fname, 'r') as fd:
-    while (line := fd.readline()):
-        monkeys.append({
-            'items': list(map(int, fd.readline().split(':')[1].replace(' ', '').split(','))),
-            'operation': get_operation_func(*fd.readline().split('=')[1].split()),
-            'divisor': int(fd.readline().split()[-1]),
-            'dest': {
-                True: int(fd.readline().split()[-1]),
-                False: int(fd.readline().split()[-1]),
-            }
-        })
-        fd.readline()
-
-common_div = reduce(mul, [monkey['divisor'] for monkey in monkeys])
 
 
 def solve_it(monkeys, rounds, reduce_worry):
@@ -47,6 +30,22 @@ def solve_it(monkeys, rounds, reduce_worry):
 
     return mul(*sorted(inspections)[-2:])
 
+
+monkeys = []
+with open(fname, 'r') as fd:
+    while (line := fd.readline()):
+        monkeys.append({
+            'items': list(map(int, fd.readline().split(':')[1].replace(' ', '').split(','))),
+            'operation': get_operation_func(*fd.readline().split('=')[1].split()),
+            'divisor': int(fd.readline().split()[-1]),
+            'dest': {
+                True: int(fd.readline().split()[-1]),
+                False: int(fd.readline().split()[-1]),
+            }
+        })
+        fd.readline()
+
+common_div = reduce(mul, [monkey['divisor'] for monkey in monkeys])
 
 print('Part 1:', solve_it(deepcopy(monkeys), 20, True))
 print('Part 2:', solve_it(deepcopy(monkeys), 10000, False))
