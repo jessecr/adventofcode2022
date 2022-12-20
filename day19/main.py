@@ -34,9 +34,7 @@ def runit(blueprints, starting_minutes):
         stores = [0, 0, 0, 0]
         q = deque([(robots, stores, starting_minutes)])
         max_geodes = 0
-        iters = 0
         while q:
-            iters += 1
             robots, stores, minutes = q.popleft()
 
             # Resources collected by existing robots
