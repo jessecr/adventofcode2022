@@ -36,7 +36,10 @@ m2 = deepcopy(monkeys)
 m2['root'][1] = '='
 equation = get_value(m2, 'root', variable='humn')
 
-# Not going to pretend like I know why this works
-expr = equation.replace("=", " - (") + ")"
+# By replacing 'humn' with an imaginary number, the expression evaluates to
+# ax + b = 0 (where x in this case is the imginary number), which we can then solve
+# using -b/a
+lside, rside = equation.split(' = ')
+expr = f'{lside} - ({rside})'
 grouped = eval(expr.replace('humn', '1j'))
 print('Part 2:', int(round(-grouped.real / grouped.imag)))
